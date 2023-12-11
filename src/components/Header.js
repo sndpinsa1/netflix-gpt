@@ -1,14 +1,36 @@
-import { signOut } from "firebase/auth";
-import React from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { removeUser } from "../store/userSlice";
+import { addUser, removeUser } from "../store/userSlice";
 
 const Header = () => {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (loggedInUser) => {
+      if (loggedInUser) {
+        console.log(loggedInUser);
+        dispatch(
+          addUser({
+            email: loggedInUser.email,
+            displayName: loggedInUser.displayName,
+            photoURL: loggedInUser.photoURL,
+            uid: loggedInUser.uid,
+          })
+        );
+        navigate("/browse");
+      } else {
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const logout = () => {
     signOut(auth)
       .then(() => {

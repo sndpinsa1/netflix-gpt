@@ -4,12 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { addUser, removeUser } from "../store/userSlice";
+import { setGptToggle } from "../store/gptSlice";
+import { SUPPORTED_LANGS } from "../utils/constants";
+import { setLang } from "../store/appConfigSlice";
 
 const Header = () => {
   const user = useSelector((state) => state.user);
+  const selectedLang = useSelector((state) => state.config.lang);
+  const gptToggle = useSelector((state) => state.gpt.gptToggle);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (loggedInUser) => {
       if (loggedInUser) {
@@ -31,6 +35,14 @@ const Header = () => {
     return () => unsubscribe();
   }, []);
 
+  const handleGptToggle = () => {
+    dispatch(setGptToggle(!gptToggle));
+  };
+
+  const onChangeHandler = (e) => {
+    dispatch(setLang(e.target.value));
+  };
+
   const logout = () => {
     signOut(auth)
       .then(() => {
@@ -51,7 +63,25 @@ const Header = () => {
 
       <div>
         {user && (
-          <div>
+          <div className="flex gap-4">
+            {gptToggle && (
+              <select value={selectedLang} onChange={onChangeHandler}>
+                {SUPPORTED_LANGS.map((lang) => {
+                  return (
+                    <option key={lang.identifier} value={lang.identifier}>
+                      {lang.name}
+                    </option>
+                  );
+                })}
+              </select>
+            )}
+
+            <button
+              className="bg-red-700 px-10 py-3 text-white font-bold rounded-lg"
+              onClick={handleGptToggle}
+            >
+              {gptToggle ? "Homepage" : "GPT Search"}
+            </button>
             <button onClick={logout} className="font-bold text-white">
               {user.displayName + ", "} LogOut
             </button>

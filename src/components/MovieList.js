@@ -2,7 +2,6 @@ import React from "react";
 import { IMG_URL } from "../utils/constants";
 
 const MovieList = ({ title, movies }) => {
-  console.log(movies);
   return (
     <div className="pl-12">
       <h1 className="font-bold text-white text-3xl py-5">{title}</h1>

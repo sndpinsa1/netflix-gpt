@@ -16,3 +16,9 @@ export const API_OPTIONS = {
 };
 
 export const IMG_URL = "https://image.tmdb.org/t/p/w200";
+
+export const SUPPORTED_LANGS = [
+  { name: "English", identifier: "en" },
+  { name: "Hindi", identifier: "hi" },
+  { name: "Spanish", identifier: "sp" },
+];
